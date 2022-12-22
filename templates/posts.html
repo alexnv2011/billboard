@@ -14,23 +14,15 @@
 
    <hr>
    {% if posts %}
-       <table>
-           <tr>
-               <td>Caption</td>
-               <td>Publication date</td>
-               <td>Text</td>
-           </tr>
-           {% for post in posts %}
-           <tr>
-               <td><a href="/post/{{ post.id }}">
-                   {{ post.caption }}</a></td>
-               <td>{{ post.time_create|date:'d.M.Y' }}</td>
-               <td>{{ post.text }}</td>
 
-           </tr>
+           {% for post in posts %}
+
+                 <h5><a href="/post/{{ post.id }}">{{ post.caption }}</a></h5>
+                      Published: {{ post.time_create|date:'d.M.Y' }}
+                       {{ post.text|safe }}
+                 <hr>
            {% endfor %}
 
-       </table>
    {% else %}
        <h2>There is nothing!</h2>
    {% endif %}

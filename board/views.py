@@ -3,11 +3,11 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from .models import Post, Reply
 from .forms import PostForm, ReplyForm
-from .tasks import send_notify_email
 from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 
 @login_required
@@ -15,6 +15,14 @@ def accept_me(request, pk):
     reply = Reply.objects.get(id=pk)
     reply.accepted = True
     reply.save()
+    #  Отправляем письмо
+    recipient_list = [reply.user.email]
+    send_mail(
+        subject=f'Ваш отклик принят на сайте!',
+        message='Краткое содержание отклика: ' + reply.text[0:200] + '\n' + f'Перейти на сайт: http://127.0.0.1:8000',
+        from_email='info@vikingservice72.ru',
+        recipient_list=recipient_list
+    )
     return redirect('replies')
 
 
@@ -39,6 +47,7 @@ class PostDetail(DetailView):
         if request.POST['text']:
             reply = Reply(text=request.POST['text'], user=current_user, post=post)
             reply.save()
+
         else:
             raise ValidationError({
                 "text": "Текст не может быть пустым."
@@ -90,13 +99,12 @@ class ReplyCreate(LoginRequiredMixin, CreateView):
     template_name = 'reply_create.html'
     success_url = reverse_lazy('replies')
 
-    def form_valid(self, form):
-        print('!!!!!!! Уведомление о новом ответе ')
-        reply = form.save(commit=False)
-
-        super().form_valid(form)
-        send_notify_email.delay(reply.id)    # Уведомление о новом ответе
-        return redirect('/')
+    # def form_valid(self, form):
+    #     print('!!!!!!! Уведомление о новом ответе ')
+    #     reply = form.save(commit=False)
+    #     super().form_valid(form)
+    #     send_notify_email.delay(reply.id)    # Уведомление о новом ответе
+    #     return redirect('/')
 
 
 class ReplyDelete(LoginRequiredMixin, DeleteView):

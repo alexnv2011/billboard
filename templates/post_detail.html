@@ -8,7 +8,7 @@
 <h1>{{ post_data.caption }}</h1>
 <h6>Published: {{ post_data.time_create|date:'d.M.Y' }}; Author: {{ post_data.author.username }}</h6>
 <hr>
-<p>{{ post_data.text }}</p>
+<p>{{ post_data.text|safe }}</p>
 
 {% if user.is_authenticated %}
 <button><a href="{{ post_data.id }}/edit/" >EDIT</a></button> <button><a href="{{ post_data.id }}/delete/">DELETE</a></button>
