@@ -1,0 +1,39 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'default.html' %}
+
+
+<!-- Название у нас  -->
+{% block title %}  Posts {% endblock title %}
+
+<!-- В контенте на странице мы выводим все -->
+{% block content %}
+
+<h1>All posts</h1>
+
+<h4>Total: {{ posts|length }}</h4>
+
+   <hr>
+   {% if posts %}
+       <table>
+           <tr>
+               <td>Caption</td>
+               <td>Publication date</td>
+               <td>Text</td>
+           </tr>
+           {% for post in posts %}
+           <tr>
+               <td><a href="/post/{{ post.id }}">
+                   {{ post.caption }}</a></td>
+               <td>{{ post.time_create|date:'d.M.Y' }}</td>
+               <td>{{ post.text }}</td>
+
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2>There is nothing!</h2>
+   {% endif %}
+
+
+{% endblock content %}

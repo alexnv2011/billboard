@@ -1,0 +1,12 @@
+{% extends 'default.html' %}
+
+{% block content %}
+<h1>Delete reply</h1>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    <h4>Delete reply: "{{ object.text }}"?</h4>
+    <input type="submit" value="Delete" />
+</form>
+{% endblock content %}
+

@@ -1,0 +1,43 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'default.html' %}
+
+
+<!-- Название у нас  -->
+{% block title %}  Replies for my posts {% endblock title %}
+
+<!-- В контенте на странице мы выводим все -->
+{% block content %}
+
+<h1>All replies for my posts</h1>
+
+<h4>Total: {{ replies|length }}</h4>
+
+   <hr>
+   {% if replies %}
+       <table>
+           <tr>
+               <td>Publication date</td>
+               <td>Text</td>
+               <td>Accepted</td>
+           </tr>
+           {% for reply in replies %}
+           <tr>
+               <td>{{ reply.time_create|date:'d.M.Y' }}</td>
+               <td>{{ reply.text }}</td>
+               <td>
+                    {% if reply.accepted %}
+                        Accepted
+                    {% else %}
+                        <a href="/reply/{{ reply.id }}/accept/">Accept</a> <a href="/reply/{{ reply.id }}/delete/">Delete</a>
+                    {% endif %}
+               </td>
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2>There is nothing!</h2>
+   {% endif %}
+
+
+{% endblock content %}
