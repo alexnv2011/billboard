@@ -1,7 +1,6 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'default.html' %}
 
-
 <!-- Название у нас  -->
 {% block title %}  Replies for my posts {% endblock title %}
 
@@ -10,6 +9,14 @@
 
 <h1>All replies for my posts</h1>
 
+   {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+   <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" value="Find" />
+   </form>
+
 <h4>Total: {{ replies|length }}</h4>
 
    <hr>
@@ -17,8 +24,9 @@
        <table>
            <tr>
                <td>Publication date</td>
-               <td>Text</td>
+               <td>Reply text</td>
                <td>Accepted</td>
+               <td>Post caption</td>
            </tr>
            {% for reply in replies %}
            <tr>
@@ -31,12 +39,13 @@
                         <a href="/reply/{{ reply.id }}/accept/">Accept</a> <a href="/reply/{{ reply.id }}/delete/">Delete</a>
                     {% endif %}
                </td>
+               <td>{{ reply.post.caption }}</td>
            </tr>
            {% endfor %}
 
        </table>
    {% else %}
-       <h2>There is nothing!</h2>
+       <h3>There is nothing!</h3>
    {% endif %}
 
 

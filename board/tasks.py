@@ -8,10 +8,8 @@ import time
 @shared_task
 def send_notify_email(reply_id):
     time.sleep(2)
-    print('id reply = ' + str(reply_id))
     reply = Reply.objects.get(id=reply_id)
     recipient_list = [reply.user.email]
-    print('recipient_list = ' + str(recipient_list))
 
     #  Отправляем письмо
     send_mail(

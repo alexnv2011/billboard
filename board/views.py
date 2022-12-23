@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-
+from .filters import ReplyFilter
 
 @login_required
 def accept_me(request, pk):
@@ -85,12 +85,24 @@ class RepliesList(LoginRequiredMixin, ListView):
     ordering = '-time_create'
     template_name = 'replies.html'
     context_object_name = 'replies'
-    queryset = Reply.objects.all()
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['post_text'] = not self.request.user.groups.filter(name='authors').exists()
-    #     return context
+    def get_queryset(self):
+        # Получаем обычный запрос
+        queryset = super().get_queryset()
+        queryset = queryset.filter(post__author__id=self.request.user.id)
+        # Используем наш класс фильтрации.
+        # self.request.GET содержит объект QueryDict,
+        # Сохраняем нашу фильтрацию в объекте класса, чтобы потом добавить в контекст и использовать в шаблоне.
+        self.filterset = ReplyFilter(self.request.GET, queryset)
+        # Возвращаем из функции отфильтрованный список
+        return self.filterset.qs
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Добавляем в контекст объект фильтрации.
+        context['filterset'] = self.filterset
+        return context
 
 
 class ReplyCreate(LoginRequiredMixin, CreateView):
@@ -98,13 +110,6 @@ class ReplyCreate(LoginRequiredMixin, CreateView):
     model = Reply
     template_name = 'reply_create.html'
     success_url = reverse_lazy('replies')
-
-    # def form_valid(self, form):
-    #     print('!!!!!!! Уведомление о новом ответе ')
-    #     reply = form.save(commit=False)
-    #     super().form_valid(form)
-    #     send_notify_email.delay(reply.id)    # Уведомление о новом ответе
-    #     return redirect('/')
 
 
 class ReplyDelete(LoginRequiredMixin, DeleteView):
